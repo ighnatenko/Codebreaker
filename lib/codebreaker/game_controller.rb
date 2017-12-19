@@ -110,5 +110,3 @@ module Codebreaker
     end
   end
 end
-
-# load './lib/codebreaker/controllers/game_controller.rb'
