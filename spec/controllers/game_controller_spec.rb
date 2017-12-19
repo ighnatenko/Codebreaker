@@ -1,4 +1,4 @@
-require_relative '../../lib/codebreaker/controllers/game_controller.rb'
+require_relative '../../lib/codebreaker/game_controller.rb'
 require 'spec_helper'
 
 module Codebreaker

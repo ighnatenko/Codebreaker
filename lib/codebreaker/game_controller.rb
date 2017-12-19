@@ -1,5 +1,5 @@
-require_relative "../views/game_view.rb" 
-require_relative "../models/game_model.rb" 
+require_relative "./game_view.rb" 
+require_relative "./game_model.rb" 
 
 COUNT_OF_ATTEMPS = 7
 LENGTH_OF_CODE = 4
