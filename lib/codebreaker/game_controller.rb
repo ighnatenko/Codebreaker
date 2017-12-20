@@ -25,7 +25,7 @@ module Codebreaker
     end
 
     def guess(code)
-      @attemps_count -= 1
+      @attemps_count = @attemps_count - 1
 
       if valid_secret_code? code
         check_hint(code)
