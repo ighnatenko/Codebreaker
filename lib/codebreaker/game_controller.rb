@@ -1,12 +1,12 @@
 require_relative "./game_view.rb" 
 require_relative "./game_model.rb" 
 
-ATTEMP_COUNT = 10
+ATTEMPTS_COUNT = 10
 LENGTH_OF_CODE = 4
 
 module Codebreaker
   class Game
-    attr_reader :attemps_count, :attemps_array
+    attr_reader :attemps_count, :attempts_array
 
     def initialize 
       default_settings
@@ -16,7 +16,7 @@ module Codebreaker
 
     def begin
       generate_secret_code
-      @view.show_begin_game ATTEMP_COUNT
+      @view.show_begin_game ATTEMPTS_COUNT
       play
     end
 
@@ -26,17 +26,18 @@ module Codebreaker
 
       if valid_secret_code? code
         check_hint(code)
-        @attemps_array
+        @attempts_array
       else
         raise "Invalid code"
       end
     end
 
-    def start_again code
-      name = @view.user_name
-      @model.save_score(name, @attemps_count)
+    def reset 
       default_settings
-      start(code) 
+    end
+
+    def save
+      @model.save_score(name, @attemps_count)
     end
 
     def win? secret_code
@@ -45,6 +46,10 @@ module Codebreaker
 
     def lose?
       @attemps_count == 0 
+    end
+
+    def max_attempts_count
+      ATTEMPTS_COUNT
     end
 
     def hint
@@ -80,7 +85,7 @@ module Codebreaker
       count_minus.times { result << "-" }
       result
 
-      @attemps_array << { code: secret_code, matching: result }  
+      @attempts_array << { code: secret_code, matching: result }  
     end
 
     def play
@@ -155,8 +160,9 @@ module Codebreaker
     end
 
     def default_settings
-      @attemps_count = ATTEMP_COUNT
+      @attemps_count = ATTEMPTS_COUNT
       @secret_code = ''
+      @attempts_array = []
     end
 
     def play_again answer
