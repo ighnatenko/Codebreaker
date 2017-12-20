@@ -9,7 +9,6 @@ module Codebreaker
     attr_reader :attemps_count, :attempts_array
 
     def initialize 
-      default_settings
       @view = GameView.new
       @model = GameModel.new
     end
@@ -20,13 +19,16 @@ module Codebreaker
       play
     end
 
-    def start(code)
-      @attemps_count -= 1
+    def start
+      default_settings
       generate_secret_code
+    end
+
+    def guess(code)
+      @attemps_count -= 1
 
       if valid_secret_code? code
         check_hint(code)
-        @attempts_array
       else
         raise "Invalid code"
       end
@@ -34,6 +36,7 @@ module Codebreaker
 
     def reset 
       default_settings
+      generate_secret_code
     end
 
     def save
@@ -83,7 +86,6 @@ module Codebreaker
       result = ""
       count_plus.times { result << "+" }
       count_minus.times { result << "-" }
-      result
 
       @attempts_array << { code: secret_code, matching: result }  
     end
@@ -117,8 +119,6 @@ module Codebreaker
         @attemps_count -= 1;
       end
     end
-
-  
 
     def lose_message
       if @attemps_count == 0 
