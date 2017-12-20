@@ -10,8 +10,8 @@ class GameModel
     @user
   end
 
-  def save_score(user_name, user_attempts)  
-    @user = { :user_name => user_name, :user_attempts => user_attempts }
+  def save_score(name, attempts)  
+    @user = { :name => user_name, :score => user_attempts, :time => Time.new }
     File.open(USER_SCORE_PATH, "wb") do |file|
       Marshal.dump(@user, file)
     end

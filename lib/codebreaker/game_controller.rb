@@ -1,11 +1,12 @@
 require_relative "./game_view.rb" 
 require_relative "./game_model.rb" 
 
-COUNT_OF_ATTEMPS = 7
+ATTEMP_COUNT = 10
 LENGTH_OF_CODE = 4
 
 module Codebreaker
   class Game
+    attr_reader :attemps_count, :attemps_array
 
     def initialize 
       default_settings
@@ -13,13 +14,74 @@ module Codebreaker
       @model = GameModel.new
     end
 
-    def start
+    def begin
       generate_secret_code
-      @view.show_begin_game COUNT_OF_ATTEMPS
+      @view.show_begin_game ATTEMP_COUNT
       play
     end
 
+    def start(code)
+      @attemps_count -= 1
+      generate_secret_code
+
+      if valid_secret_code? code
+        check_hint(code)
+        @attemps_array
+      else
+        raise "Invalid code"
+      end
+    end
+
+    def start_again code
+      name = @view.user_name
+      @model.save_score(name, @attemps_count)
+      default_settings
+      start(code) 
+    end
+
+    def win? secret_code
+      @secret_code == secret_code ? true : false
+    end
+
+    def lose?
+      @attemps_count == 0 
+    end
+
+    def hint
+      random_index = rand(LENGTH_OF_CODE)
+      @secret_code[random_index]
+    end
+
+    def statistics 
+      @model.load_score
+    end
+
     private
+
+    def lose_message
+      if @attemps_count == 0 
+        @view.show_user_lost @secret_code
+      end
+    end
+
+    def check_hint secret_code 
+      count_plus = 0
+      count_minus = 0
+
+      @secret_code.each_char.with_index do |char, index|
+        count_plus += 1 if char == secret_code[index] 
+        count_minus += 1 if secret_code.include?(char)
+      end
+
+      count_minus -= count_plus
+      
+      result = ""
+      count_plus.times { result << "+" }
+      count_minus.times { result << "-" }
+      result
+
+      @attemps_array << { code: secret_code, matching: result }  
+    end
 
     def play
       game_lifecycle
@@ -30,8 +92,8 @@ module Codebreaker
     end
 
     def game_lifecycle
-      while @count_of_attemps != 0 
-        @view.show_attemps_count @count_of_attemps
+      while @attemps_count != 0 
+        @view.show_attemps_count @attemps_count
         secret_code = @view.secret_code
 
         unless valid_secret_code? secret_code
@@ -47,16 +109,14 @@ module Codebreaker
         hint = guessed_numbers secret_code
         @view.show_hint(hint)
 
-        @count_of_attemps -= 1;
+        @attemps_count -= 1;
       end
     end
 
-    def win? secret_code
-      @secret_code == secret_code ? true : false
-    end
+  
 
     def lose_message
-      if @count_of_attemps == 0 
+      if @attemps_count == 0 
         @view.show_user_lost @secret_code
       end
     end
@@ -95,7 +155,7 @@ module Codebreaker
     end
 
     def default_settings
-      @count_of_attemps = COUNT_OF_ATTEMPS
+      @attemps_count = ATTEMP_COUNT
       @secret_code = ''
     end
 
@@ -105,7 +165,7 @@ module Codebreaker
         start 
        else 
         name = @view.user_name
-        @model.save_score(name, @count_of_attemps)
+        @model.save_score(name, @attemps_count)
       end
     end
   end
