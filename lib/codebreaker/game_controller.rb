@@ -1,54 +1,49 @@
-require_relative "./game_view.rb" 
-require_relative "./game_model.rb" 
+require_relative './game_model.rb'
 
 ATTEMPTS_COUNT = 10
-LENGTH_OF_CODE = 4
+CODE_LENGTH = 4
 
 module Codebreaker
   class Game
-    attr_reader :attemps_count, :attempts_array
+    attr_reader :attemps_count, :hint_array
 
-    def initialize 
-      @view = GameView.new
-      @model = GameModel.new
-    end
-
-    def begin
-      generate_secret_code
-      @view.show_begin_game ATTEMPTS_COUNT
-      play
+    def initialize
+      @model = Codebreaker::GameModel.new
     end
 
     def start
+      puts 'The game has begun'
       default_settings
       generate_secret_code
     end
 
     def guess(code)
-      @attemps_count = @attemps_count - 1
+      @attemps_count -= 1
 
-      if valid_secret_code? code
-        check_hint(code)
+      if valid_secret_code?(code)
+        add_hint(guessed_hint(@secret_code, code)) if @attemps_count != 0
       else
-        raise "Invalid code"
+        raise 'Invalid code'
       end
+
+      puts "#{@attemps_count} out of #{ATTEMPTS_COUNT} attempts left"
     end
 
-    def reset 
+    def reset
       default_settings
       generate_secret_code
     end
 
-    def save
-      @model.save_score(name, @attemps_count)
+    def save(name, attemps_count)
+      @model.save_score(name, attemps_count)
     end
 
-    def win? secret_code
-      @secret_code == secret_code ? true : false
+    def win?(input_code)
+      @secret_code == input_code
     end
 
     def lose?
-      @attemps_count == 0 
+      @attemps_count.zero?
     end
 
     def max_attempts_count
@@ -56,99 +51,18 @@ module Codebreaker
     end
 
     def hint
-      random_index = rand(LENGTH_OF_CODE)
+      random_index = rand(CODE_LENGTH)
       @secret_code[random_index]
     end
 
-    def statistics 
+    def statistics
       @model.load_score
     end
 
     private
 
-    def lose_message
-      if @attemps_count == 0 
-        @view.show_user_lost @secret_code
-      end
-    end
-
-    def check_hint secret_code 
-      count_plus = 0
-      count_minus = 0
-
-      @secret_code.each_char.with_index do |char, index|
-        count_plus += 1 if char == secret_code[index] 
-        count_minus += 1 if secret_code.include?(char)
-      end
-
-      count_minus -= count_plus
-      
-      result = ""
-      count_plus.times { result << "+" }
-      count_minus.times { result << "-" }
-
-      @attempts_array << { code: secret_code, matching: result }  
-    end
-
-    def play
-      game_lifecycle
-      lose_message
-
-      answer = @view.play_again_answer.downcase
-      play_again answer
-    end
-
-    def game_lifecycle
-      while @attemps_count != 0 
-        @view.show_attemps_count @attemps_count
-        secret_code = @view.secret_code
-
-        unless valid_secret_code? secret_code
-          @view.show_input_error
-          next
-        end
-        
-        if win? secret_code
-          @view.show_user_win
-          break
-        end
-
-        hint = guessed_numbers secret_code
-        @view.show_hint(hint)
-
-        @attemps_count -= 1;
-      end
-    end
-
-    def lose_message
-      if @attemps_count == 0 
-        @view.show_user_lost @secret_code
-      end
-    end
-
-    def guessed_numbers secret_code 
-      count_plus = 0
-      count_minus = 0
-
-      @secret_code.each_char.with_index do |char, index|
-        count_plus += 1 if char == secret_code[index] 
-        count_minus += 1 if secret_code.include?(char)
-      end
-
-      count_minus -= count_plus
-      
-      hint_result(count_plus, count_minus)
-    end
-
-    def hint_result(count_plus, count_minus)
-      result = ""
-      count_plus.times { result << "+" }
-      count_minus.times { result << "-" }
-      result
-    end
-
-    def valid_secret_code? secret_code
-      if secret_code.length > LENGTH_OF_CODE || secret_code.length != LENGTH_OF_CODE || secret_code == ''
+    def valid_secret_code?(secret_code)
+      if secret_code.length > CODE_LENGTH || secret_code.length < CODE_LENGTH
         false
       else
         true
@@ -156,23 +70,34 @@ module Codebreaker
     end
 
     def generate_secret_code
-      LENGTH_OF_CODE.times { @secret_code << random_value = rand(1..6).to_s }
+      CODE_LENGTH.times { @secret_code << rand(1..6).to_s }
     end
 
     def default_settings
       @attemps_count = ATTEMPTS_COUNT
       @secret_code = ''
-      @attempts_array = []
+      @hint_array = []
     end
 
-    def play_again answer
-      if answer == "yes" || answer == "y"
-        default_settings
-        start 
-       else 
-        name = @view.user_name
-        @model.save_score(name, @attemps_count)
+    def guessed_hint(secret_code, input_code)
+      count_plus = 0
+      count_minus = 0
+
+      secret_code.each_char.with_index do |char, index|
+        count_plus += 1 if char == input_code[index]
+        count_minus += 1 if input_code.include?(char)
       end
+
+      count_minus -= count_plus
+      result = ''
+      count_plus.times { result << '+' }
+      count_minus.times { result << '-' }
+
+      result == '' ? nil : { code: input_code, matching: result }
+    end
+
+    def add_hint(hint_hash)
+      @hint_array << hint_hash unless hint_hash.nil?
     end
   end
 end
