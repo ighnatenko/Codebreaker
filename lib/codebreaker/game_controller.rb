@@ -20,7 +20,7 @@ module Codebreaker
     def guess(code)
       @attemps_count -= 1
 
-      if @secret_code == input_code
+      if @secret_code == code
         @player_win = true
         return
       end
