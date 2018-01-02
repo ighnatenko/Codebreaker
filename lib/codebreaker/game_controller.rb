@@ -5,7 +5,7 @@ CODE_LENGTH = 4
 
 module Codebreaker
   class Game
-    attr_reader :attemps_count, :hint_array
+    attr_reader :attemps_count, :hint_array, :secret_code
 
     def initialize
       @model = Codebreaker::GameModel.new
