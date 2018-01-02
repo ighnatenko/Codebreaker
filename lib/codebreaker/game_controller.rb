@@ -20,6 +20,11 @@ module Codebreaker
     def guess(code)
       @attemps_count -= 1
 
+      if @secret_code == input_code
+        @player_win = true
+        return
+      end
+
       if valid_secret_code?(code)
         add_hint(guessed_hint(@secret_code, code)) if @attemps_count != 0
       else
@@ -38,12 +43,14 @@ module Codebreaker
       @model.save_score(name, attemps_count)
     end
 
-    def win?(input_code)
-      @secret_code == input_code
-    end
-
-    def lose?
-      @attemps_count.zero?
+    def game_process
+      if @player_win
+        :win
+      elsif @attemps_count.zero? && !@player_win
+        :lose
+      else
+        :play
+      end
     end
 
     def max_attempts_count
@@ -77,6 +84,7 @@ module Codebreaker
       @attemps_count = ATTEMPTS_COUNT
       @secret_code = ''
       @hint_array = []
+      @player_win = false
     end
 
     def guessed_hint(secret_code, input_code)

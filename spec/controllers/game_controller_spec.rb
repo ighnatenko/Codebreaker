@@ -35,7 +35,8 @@ RSpec.describe Codebreaker::Game do
         eq(code: '6643', matching: '--')
       expect(subject.send(:guessed_hint, '1234', '1235')).to \
         eq(code: '1235', matching: '+++')
-      expect(subject.send(:guessed_hint, '1234', '5566')).to eq nil
+      expect(subject.send(:guessed_hint, '1234', '5566')).to \
+      eq(code: '5566', matching: '')
     end
   end
 end
