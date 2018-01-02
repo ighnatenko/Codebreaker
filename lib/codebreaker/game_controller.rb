@@ -93,7 +93,7 @@ module Codebreaker
       count_plus.times { result << '+' }
       count_minus.times { result << '-' }
 
-      result == '' ? nil : { code: input_code, matching: result }
+      { code: input_code, matching: result }
     end
 
     def add_hint(hint_hash)
