@@ -39,8 +39,8 @@ module Codebreaker
       generate_secret_code
     end
 
-    def save(name, attemps_count)
-      @model.save_score(name, attemps_count)
+    def save(name)
+      @model.save_score(name, @attemps_count)
     end
 
     def game_process
