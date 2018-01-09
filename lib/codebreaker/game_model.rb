@@ -13,7 +13,11 @@ module Codebreaker
     end
 
     def load_score
-      @users = YAML.load_file(USER_SCORE_PATH)
+      if File.exist?(USER_SCORE_PATH)
+        @users = YAML.load_file(USER_SCORE_PATH)
+      else
+        {}
+      end
     end
 
     def save_score(name, attempts)
@@ -29,6 +33,7 @@ module Codebreaker
     private
 
     def save_user(users)
+      File.new(USER_SCORE_PATH, 'w+') unless File.exist?(USER_SCORE_PATH)
       File.write(USER_SCORE_PATH, users.to_yaml)
     end
   end
