@@ -16,7 +16,7 @@ RSpec.describe Codebreaker::GameModel do
     it 'saved successfully' do
       subject.save_score('test name', 4)
       users = subject.load_score
-      user = users.last
+      user = users['test name']
       
       expect(user[:name]).to eq 'test name'
       expect(user[:score]).to eq 4

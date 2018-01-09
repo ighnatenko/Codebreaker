@@ -1,21 +1,19 @@
 module Codebreaker
   class GameModel
 
-    require 'pp'
-    require 'marshal/structure'
+    require 'yaml'
 
-    USER_SCORE_PATH = './lib/codebreaker/user_score.txt'
+    USER_SCORE_PATH = './lib/codebreaker/user_score.yml'
 
     attr_reader :users
 
     def clear
-      @users = []
+      @users = {}
       save_user(@users)
     end
 
     def load_score
-      File.open(USER_SCORE_PATH, 'rb') { |f| @users = Marshal.load(f) }
-      @users
+      @users = YAML.load_file(USER_SCORE_PATH)
     end
 
     def save_score(name, attempts)
@@ -24,16 +22,14 @@ module Codebreaker
 
       @users = load_score
       user = { name: name, score: attempts, time: Time.new }
-      @users << user
+      @users[name] = user
       save_user(@users)
     end
     
     private
 
     def save_user(users)
-      File.open(USER_SCORE_PATH, 'wb') do |file|
-        Marshal.dump(users, file)
-      end
+      File.write(USER_SCORE_PATH, users.to_yaml)
     end
   end
 end
