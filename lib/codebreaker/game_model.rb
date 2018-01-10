@@ -1,8 +1,6 @@
 module Codebreaker
   class GameModel
 
-    require 'yaml'
-
     USER_SCORE_PATH = './lib/codebreaker/user_score.yml'
 
     attr_reader :users

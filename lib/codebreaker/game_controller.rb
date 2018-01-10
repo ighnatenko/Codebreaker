@@ -1,5 +1,3 @@
-require_relative './game_model.rb'
-
 ATTEMPTS_COUNT = 10
 CODE_LENGTH = 4
 

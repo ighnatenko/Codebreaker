@@ -1,5 +1,3 @@
-require_relative '../../lib/codebreaker/game_controller.rb'
-
 RSpec.describe Codebreaker::Game do
   describe 'validation secret code' do
     let(:secret_code) { subject.instance_variable_get(:@secret_code) }

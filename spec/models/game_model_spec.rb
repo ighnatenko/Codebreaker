@@ -1,5 +1,3 @@
-require_relative '../../lib/codebreaker/game_model.rb'
-
 RSpec.describe Codebreaker::GameModel do
   describe 'validation game model' do
     it 'there are exceptions when saving' do
