@@ -3,34 +3,32 @@ require 'yaml'
 module Codebreaker
   class GameModel
 
-    USER_SCORE_PATH = './lib/codebreaker/user_score.yml'
-
-    attr_reader :users
+    FILE_NAME = 'user_score.yml'
 
     def clear
-      @users = {}
-      save_user(@users)
+      save_user(File.join(__dir__, FILE_NAME), {})
     end
 
     def load_score
-      @users = YAML.load_file(USER_SCORE_PATH)
+      YAML::load_file(File.join(__dir__, FILE_NAME))
     end
 
     def save_score(name, attempts)
       raise ArgumentError, "Name can't be empty" if name.nil?
       raise ArgumentError, "Attempts can't be empty" if attempts.nil?
 
-      @users = load_score
+      users = load_score
       user = { name: name, score: attempts, time: Time.new }
-      @users[name] = user
-      save_user(@users)
+      users[name] = user
+
+      save_user(File.join(__dir__, FILE_NAME), users)
     end
-    
+
     private
 
-    def save_user(users)
-      File.new(USER_SCORE_PATH, 'w+') unless File.exist?(USER_SCORE_PATH)
-      File.write(USER_SCORE_PATH, users.to_yaml)
+    def save_user(path, users)
+      File.new(path, 'w+') unless File.exist?(path)
+      File.write(path, users.to_yaml)
     end
   end
 end
