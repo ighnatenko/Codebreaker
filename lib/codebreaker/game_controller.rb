@@ -69,11 +69,7 @@ module Codebreaker
     private
 
     def valid_secret_code?(secret_code)
-      if secret_code.length > CODE_LENGTH || secret_code.length < CODE_LENGTH
-        false
-      else
-        true
-      end
+      secret_code.length == CODE_LENGTH
     end
 
     def generate_secret_code
