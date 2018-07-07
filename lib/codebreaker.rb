@@ -1,5 +1,5 @@
-require "codebreaker/version"
-
 module Codebreaker
-  # Your code goes here...
+  require_relative 'codebreaker/version'
+  require_relative 'codebreaker/game_controller'
+  require_relative 'codebreaker/game_model'
 end
